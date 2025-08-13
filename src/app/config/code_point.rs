@@ -200,6 +200,26 @@ impl CodePointConfig {
     pub fn is_enabled(&self) -> bool {
         self.enabled
     }
+
+    fn get_pretty_enabled(&self) -> String {
+        match self.enabled {
+            true => "Enabled".to_string(),
+            false => "Disabled".to_string(),
+        }
+    }
+
+    pub fn get_label(&self) -> String {
+        format!(
+            "{} ({}) ({})",
+            self.code_point.na(),
+            self.get_char(),
+            self.get_pretty_enabled()
+        )
+    }
+
+    pub fn set_enabled(&mut self, enabled: bool) {
+        self.enabled = enabled;
+    }
 }
 
 static NON_DEPRECATED_CHARACTERS: FilterCondition = FilterCondition {

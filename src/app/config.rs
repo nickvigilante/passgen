@@ -1,6 +1,8 @@
 pub mod category;
 pub mod code_point;
 
+use arboard::Clipboard;
+
 use rand::seq::SliceRandom;
 
 use passgen::{generate_random_chars_from_char_vec, generate_rng};
@@ -9,21 +11,21 @@ use self::category::{CodePointCategory, generate_code_point_categories};
 
 pub struct Config {
     password_length: usize,
-    categories: Vec<CodePointCategory>,
+    clipboard: Clipboard,
+    pub categories: Vec<CodePointCategory>,
 }
 
 impl Config {
-    pub fn new(password_length: usize, include_extended: bool) -> Self {
-        let categories: Vec<CodePointCategory> = generate_code_point_categories(include_extended);
-        if categories.iter().map(|c| c.get_min_chars()).sum::<usize>() > password_length {
-            panic!(
-                "The sum of minimum characters from all categories must be less than or equal to the password length."
-            );
-        }
+    pub fn new() -> Self {
         Config {
-            password_length,
-            categories,
+            password_length: 128,
+            clipboard: Clipboard::new().unwrap(),
+            categories: generate_code_point_categories(),
         }
+    }
+
+    pub fn get_all_categories(&self) -> &Vec<CodePointCategory> {
+        &self.categories
     }
 
     fn get_active_categories(&self) -> Vec<&CodePointCategory> {
@@ -49,7 +51,7 @@ impl Config {
                 (cat.get_active_code_points().len() > 0).then(|| {
                     generate_random_chars_from_char_vec(
                         cat.get_active_chars(),
-                        cat.get_min_chars(),
+                        cat.get_min_required_chars(),
                         &mut rng,
                     )
                 })
@@ -66,5 +68,24 @@ impl Config {
         }
         result.shuffle(&mut rng);
         result.into_iter().collect::<String>()
+    }
+
+    pub fn get_password_length(&self) -> usize {
+        self.password_length
+    }
+
+    pub fn set_password_length(&mut self, length: usize) {
+        self.password_length = length;
+    }
+
+    pub fn save_to_clipboard(&mut self, password: String) {
+        self.clipboard.set_text(password).unwrap();
+    }
+
+    pub fn get_min_required_chars_for_active_categories(&self) -> usize {
+        self.get_active_categories()
+            .iter()
+            .map(|cat| cat.get_min_required_chars())
+            .sum()
     }
 }
