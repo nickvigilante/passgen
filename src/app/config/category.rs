@@ -91,7 +91,7 @@ impl CodePointCategory {
         if self.get_active_chars().len() > max_length {
             format!(
                 "{}...",
-                &self.get_active_chars()[..max_length]
+                self.get_active_chars()[..max_length]
                     .iter()
                     .collect::<String>()
             )
