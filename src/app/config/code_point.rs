@@ -35,7 +35,7 @@ pub trait Filterable: Any {
     fn get_type(&self) -> &str;
 }
 
-#[derive(Copy)]
+#[derive(Clone, Copy)]
 pub struct FilterCondition {
     func: &'static str,
     values: FilterValue,
@@ -55,16 +55,6 @@ impl FilterCondition {
 impl Filterable for FilterCondition {
     fn get_type(&self) -> &str {
         "FilterCondition"
-    }
-}
-
-impl Clone for FilterCondition {
-    fn clone(&self) -> Self {
-        FilterCondition {
-            func: self.func,
-            values: self.values.clone(),
-            include: self.include,
-        }
     }
 }
 
@@ -742,7 +732,7 @@ pub fn generate_all_code_points() -> Vec<CodePointConfig> {
             filters_vec
                 .iter()
                 .all(|f| cpc.matches_filter_condition_op(f))
-                .then(|| cpc)
+                .then_some(cpc)
         })
         .collect()
 }

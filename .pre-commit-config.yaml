@@ -7,18 +7,11 @@
 #   pre-commit install
 #
 # Formatter/linter per file type:
-#   Rust      -> cargo fmt (format only)
+#   Rust      -> cargo fmt (format) + cargo clippy (lint)
 #   Markdown  -> mdformat (+ mdformat-tables; CommonMark-strict, won't mangle
 #                snake_case prose or rewrite embedded code blocks)
 #   Secrets   -> betterleaks
 #   All files -> whitespace / EOF / merge-conflict hygiene
-#
-# cargo clippy is deliberately NOT wired in here yet: `cargo clippy --all-targets
-# --all-features -- -D warnings` currently fails on this codebase, including one
-# hard error (clippy::absurd_extreme_comparisons in src/ui/validation.rs — a
-# usize::MAX comparison that's always true, worth a look on its own). Add the
-# clippy hook once that backlog is triaged and fixed; see cargo-fmt below for
-# the pattern to mirror.
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -44,6 +37,12 @@ repos:
       - id: cargo-fmt
         name: cargo fmt (format Rust)
         entry: cargo fmt -- --check
+        language: system
+        files: \.rs$
+        pass_filenames: false
+      - id: cargo-clippy
+        name: cargo clippy (lint Rust)
+        entry: cargo clippy --all-targets --all-features -- -D warnings
         language: system
         files: \.rs$
         pass_filenames: false

@@ -14,7 +14,7 @@ pub fn generate_random_chars_from_char_vec(
         .unwrap()
         .sample_iter(rng)
         .take(num_chars)
-        .map(|c| *c)
+        .copied()
         .collect()
 }
 

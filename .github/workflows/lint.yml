@@ -8,9 +8,8 @@ on:
 
 jobs:
   # Runs the same hooks as the local pre-commit setup (.pre-commit-config.yaml)
-  # so local and CI can't drift — cargo fmt, mdformat, and the betterleaks
-  # secret scan. Fails if any hook would modify a committed file. (No clippy
-  # gate yet — see .pre-commit-config.yaml for why.)
+  # so local and CI can't drift — cargo fmt, cargo clippy, mdformat, and the
+  # betterleaks secret scan. Fails if any hook would modify a committed file.
   pre-commit:
     name: pre-commit (format + lint + secrets)
     runs-on: ubuntu-latest
@@ -76,7 +75,7 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
         with:
-          components: rustfmt
+          components: rustfmt, clippy
       - uses: Swatinem/rust-cache@v2
 
       - name: Install pre-commit
