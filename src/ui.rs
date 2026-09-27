@@ -261,7 +261,7 @@ fn toggle_code_pages_ui(config: &mut Config, cat_idx: usize) {
             .get_code_points()
             .iter()
             .enumerate()
-            .filter_map(|(i, cpc)| cpc.is_enabled().then(|| i))
+            .filter_map(|(i, cpc)| cpc.is_enabled().then_some(i))
             .collect::<Vec<usize>>();
 
         let items: Vec<(usize, String, &str)> = cat

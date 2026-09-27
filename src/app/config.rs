@@ -31,7 +31,7 @@ impl Config {
     fn get_active_categories(&self) -> Vec<&CodePointCategory> {
         self.categories
             .iter()
-            .filter(|cat| cat.is_enabled() && cat.get_active_code_points().len() > 0)
+            .filter(|cat| cat.is_enabled() && !cat.get_active_code_points().is_empty())
             .collect()
     }
 
@@ -47,16 +47,14 @@ impl Config {
         let mut result: Vec<char> = self
             .get_active_categories()
             .iter()
-            .filter_map(|cat| {
-                (cat.get_active_code_points().len() > 0).then(|| {
-                    generate_random_chars_from_char_vec(
-                        cat.get_active_chars(),
-                        cat.get_min_required_chars(),
-                        &mut rng,
-                    )
-                })
+            .filter(|&cat| !cat.get_active_code_points().is_empty())
+            .flat_map(|cat| {
+                generate_random_chars_from_char_vec(
+                    cat.get_active_chars(),
+                    cat.get_min_required_chars(),
+                    &mut rng,
+                )
             })
-            .flatten()
             .collect();
         let remaining_length = self.password_length - result.len();
         if remaining_length > 0 {
